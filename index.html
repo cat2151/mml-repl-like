@@ -1,0 +1,165 @@
+<script src="https://minipop.github.io/sionicjs/demo/pico.min.js"></script>
+<script src="https://minipop.github.io/sionicjs/dist/sionic.js"></script>
+<textarea id="textarea2" rows="5" cols="10">@5 l8 o7 c
+d
+e</textarea>
+<br>
+<textarea id="textarea4" rows="1" cols="10">@5 l2 </textarea>
+<br>
+<textarea id="textarea3" rows="5" cols="10">c;e;g;
+c;f;a;</textarea>
+<input type="button" value="play" onclick="clickBtn5()" />
+<br>
+<textarea id="textarea5" rows="6" cols="10" readonly></textarea>
+<script>
+  let textarea2 = document.getElementById("textarea2");
+  textarea2.addEventListener("input", inputTextareaMelody);
+  let textarea3 = document.getElementById("textarea3");
+  textarea3.addEventListener("input", inputTextareaChord);
+  let textarea4 = document.getElementById("textarea4");
+  textarea4.addEventListener("input", inputTextareaChord);
+  let textarea5 = document.getElementById("textarea5");
+  let oldMml2 = "";
+  let oldMml3 = "";
+
+  function clickBtn5() {
+    const mml2 = textarea2.value;
+    const mmlChord = textarea3.value;
+    const mmlHead = textarea4.value;
+    const parallelizedMml = parallelizeMml(mmlChord);
+    const headAddedMml = createHeadAddedMml(parallelizedMml, mmlHead);
+    const mml = mml2.replace(/\n/g, '') + ";\n" + headAddedMml;
+    Pico.pause();
+    Pico.play(Sionic(mml));
+    textarea5.textContent = mml;
+    oldMml2 = mml2;
+    oldMml3 = mmlChord;
+  }
+
+  function inputTextareaMelody() {
+    const mml2 = textarea2.value;
+    const repledMml = createMmlReplLike(mml2, oldMml2);
+    Pico.pause();
+    Pico.play(Sionic(repledMml));
+    textarea5.textContent = repledMml;
+    oldMml2 = mml2;
+  }
+
+  function inputTextareaChord() {
+    const mmlChord = textarea3.value;
+    const mmlHead = textarea4.value;
+    const repledMml = createMmlReplLike(mmlChord, oldMml3);
+    const parallelizedMml = parallelizeMml(repledMml);
+    const headAddedMml = createHeadAddedMml(parallelizedMml, mmlHead);
+    Pico.pause();
+    Pico.play(Sionic(headAddedMml));
+    textarea5.textContent = headAddedMml;
+    oldMml3 = mmlChord;
+  }
+
+  function createMmlReplLike(mml, oldMml) {
+    const oldLines = splitByLine(oldMml);
+    const lines = splitByLine(mml);
+    const currentLineNumber = searchFirstDifferenceLineNumber(lines, oldLines);
+    if (currentLineNumber < 0) return mml;
+    if (currentLineNumber >= lines.length) return mml; // 末尾に改行追加した場合用 
+    const mmlBefore = lines.slice(0, currentLineNumber).join('');
+    const mmlAfter = lines.slice(currentLineNumber + 1).join('');
+    const mmlCurrent = lines[currentLineNumber];
+    // if (mmlCurrent == undefined) mmlCurrent = ''; // 末尾に改行追加した場合用
+    if (!containsNotes(mmlCurrent)) return mml; // 現在行をnotesなしeditした場合用（無音でなく、全体を鳴らす）
+    const newMml = removeNotes(mmlBefore) +
+      mmlCurrent +
+      removeNotes(mmlAfter);
+    return newMml;
+  }
+
+  function splitByLine(mml) {
+    const arr = mml.split("\n");
+    return arr;
+  }
+
+  function searchFirstDifferenceLineNumber(lines, oldLines) {
+    const lenLines = lines.length;
+    const lenOldLines = oldLines.length;
+    const lenMin = Math.min(lenLines, lenOldLines)
+    for (let i = 0; i < lenMin; i++) {
+      if (lines[i] != oldLines[i]) return i;
+    }
+    if (lenLines > lenOldLines) {
+      // 末尾にn行追加した場合
+      return lenLines;
+    }
+    if (lenLines < lenOldLines) {
+      // 末尾n行を削除した場合
+      return lenLines;
+    }
+    // playボタンを押した場合
+    return -1;
+  }
+
+  function removeNotes(mml) {
+    const re = /[a-g][\+\-]*/g
+    return mml.replace(re, '');
+  }
+
+  function containsNotes(mml) {
+    const re = /[a-g][\+\-]*/g
+    return mml.match(re);
+  }
+  // example : "c;e;g; \n c;f;a;" -> "cc ; ef ; ga"
+  function parallelizeMml(mml) {
+    const lines = splitByLine(mml);
+    const lenLines = lines.length;
+    const maxTrackNumber = calcMaxTrackNumber(lines);
+    let tracks = new Array(maxTrackNumber);
+    for (let phase = 0; phase < lenLines; phase++) {
+      updateTracks(lines[phase], tracks);
+    }
+    const results = tracks.join(';\n')
+    // console.log(results);
+    return results;
+  }
+  // console.log(parallelizeMml("c;e;g; \n c;f;g;")); // test
+  //    
+  function updateTracks(line, tracks) {
+    const nowTracks = line.split(';');
+    const lenNowTracks = nowTracks.length;
+    for (let i = 0; i < lenNowTracks; i++) {
+      if (tracks[i] == undefined) tracks[i] = '';
+      tracks[i] += calcNowTrackNote(nowTracks[i]);
+    }
+    return tracks;
+  }
+  // console.log(updateTracks("c;e;g",[,,])); // test
+  // console.log(updateTracks("c;f;a",["c","e","g"])); // test
+  //
+  function calcNowTrackNote(mml) {
+    if (!mml) return "r";
+    return mml;
+  }
+
+  function calcMaxTrackNumber(arr) {
+    const lenArr = arr.length;
+    let maxSeparates = 0;
+    for (let i = 0; i < lenArr; i++) {
+      const line = arr[i];
+      const numOfSeparates = (line.match(/\;/g) || []).length;
+      if (numOfSeparates > maxSeparates) maxSeparates = numOfSeparates;
+    }
+    return maxSeparates + 1;
+  }
+  //console.log(calcMaxTrackNumber(["a;b;c","a"])); // test
+  //
+  function createHeadAddedMml(mml, headMml) {
+    mml = mml.replace(/\n/g, '');
+    let arr = mml.split(";");
+    const arrLength = arr.length;
+    for (let i = 0; i < arrLength; i++) {
+      arr[i] = headMml + arr[i];
+    }
+    const results = arr.join(';\n');
+    // console.log(results);
+    return results;
+  }
+</script>
