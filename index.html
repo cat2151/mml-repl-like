@@ -6,11 +6,11 @@ e</textarea>
 <br>
 <textarea id="textarea4" rows="1" cols="10">@5 l2 </textarea>
 <br>
-<textarea id="textarea3" rows="5" cols="10">c;e;g;
+<textarea id="textarea3" rows="5" cols="15">c;e;g;
 c;f;a;</textarea>
 <input type="button" value="play" onclick="playAll()" />
 <br>
-<textarea id="textarea5" rows="6" cols="10" readonly></textarea>
+<textarea id="textarea5" rows="6" cols="15" readonly></textarea>
 <div>
   <a href="https://github.com/cat2151/mml-repl-like/blob/main/index.html/">ソースファイル GitHubリポジトリ</a>
 </div>
@@ -25,8 +25,8 @@ c;f;a;</textarea>
   let textarea5 = document.getElementById("textarea5");
 
   textarea2.addEventListener("input", playInputtedMelody);
-  textarea3.addEventListener("input", inputTextareaChord);
-  textarea4.addEventListener("input", inputTextareaChord);
+  textarea3.addEventListener("input", playInputtedChord);
+  textarea4.addEventListener("input", playInputtedChord);
 
   textarea2.addEventListener('keypress', function(e) {
     // SHIFT+ENTER
@@ -37,7 +37,13 @@ c;f;a;</textarea>
       playSelectedMml(textarea2);
     }
   });
-  
+  textarea3.addEventListener('keypress', function(e) {
+    if (e.keyCode === 13 && e.shiftKey) {
+      e.preventDefault();
+      playCurrentChord(textarea3, textarea4.value);
+    }
+  });
+
   textarea2.addEventListener('keydown', function(e) {
     // CTRL+S
     if (e.keyCode === 83 && e.ctrlKey) {
@@ -45,6 +51,12 @@ c;f;a;</textarea>
       e.preventDefault();
       // 選択した範囲のMMLを鳴らす
       playSelectedMml(textarea2);
+    }
+  });
+  textarea3.addEventListener('keydown', function(e) {
+    if (e.keyCode === 83 && e.ctrlKey) {
+      e.preventDefault();
+      playCurrentChord(textarea3, textarea4.value);
     }
   });
 
@@ -55,23 +67,101 @@ c;f;a;</textarea>
       playNowToneMml(textarea2);
     }
   });
+  textarea3.addEventListener('keyup', function(e) {
+    if (e.keyCode == 38 || e.keyCode == 40) {
+      playCurrentChord(textarea3, textarea4.value);
+    }
+    if (e.keyCode == 37 || e.keyCode == 39) {
+      playNowToneMml(textarea3, textarea4.value);
+    }
+  });
 
   let oldMml2 = "";
   let oldMml3 = "";
 
   // textareaで選択した範囲または現在行のMMLを鳴らす
-  function playSelectedMml(textarea) {
+  function playSelectedMml(textarea, mmlHead = "") {
     let playMml = "";
     if (isSelect(textarea)) {
       // 選択範囲からmmlを得る
       playMml = createSelectedMml(textarea.value, textarea.selectionStart, textarea.selectionEnd);
     } else {
       // 現在行からmmlを得る
-      const currentLineNumber = calcCurrentLineNumber(textarea.value, textarea.selectionStart)
+      const currentLineNumber = calcCurrentLineNumber(textarea.value, textarea.selectionStart);
       playMml = createCurrentLineMml(textarea.value, currentLineNumber);
     }
+    playMml = createHeadAddedMml(playMml, mmlHead);
+    playAndDisp(playMml);
+  }
+
+  function playAll() {
+    const mml2 = textarea2.value;
+    const mmlChord = textarea3.value;
+    const mmlHead = textarea4.value;
+    const mml = mml2.replace(/\n/g, '') + ";\n" + createChordMml(mmlChord, mmlHead);
+    oldMml2 = mml2;
+    oldMml3 = mmlChord;
+    playAndDisp(mml);
+  }
+
+  // 現在位置のMMLを鳴らす
+  function playNowToneMml(textarea, mmlHead = "") {
+    let newMml;
+    if (isNote(textarea.value, textarea.selectionStart)) {
+      newMml = createNowToneMml(textarea.value, textarea.selectionStart);
+      newMml = createChordMml(newMml, mmlHead); // kt用
+    } else {
+      newMml = "";
+    }
+    playAndDisp(newMml);
+  }
+
+  // 入力した音のみを鳴らす
+  function playInputtedMelody() {
+    const mml2 = textarea2.value;
+    let newMml;
+    const isInserted = (oldMml2.length < mml2.length);
+    if (isInserted) {
+      newMml = createNowToneMml(textarea2.value, textarea2.selectionStart - 1);
+    } else {
+      if (isNote(textarea2.value, textarea2.selectionStart)) {
+        newMml = createNowToneMml(textarea2.value, textarea2.selectionStart);
+      } else {
+        newMml = "";
+      }
+    }
+    oldMml2 = mml2;
+    playAndDisp(newMml);
+  }
+
+  function playInputtedChord() {
+    playCurrentChord(textarea3, textarea4.value);
+  }
+  // // 現在行のchord MMLを鳴らす(diff)
+  // function playInputtedChord() {
+  //   const mmlChord = textarea3.value;
+  //   const mmlHead = textarea4.value;
+  //   const repledMml = createMmlReplLike(mmlChord, oldMml3);
+  //   const headAddedMml = createChordMml(repledMml, mmlHead);
+  //   playAndDisp(headAddedMml);
+  //   oldMml3 = mmlChord;
+  // }
+
+  // 現在行のchord MMLを鳴らす(selectionStart)
+  function playCurrentChord(textarea, mmlHead = "") {
+    const currentLineNumber = calcCurrentLineNumber(textarea.value, textarea.selectionStart);
+    let playMml = createCurrentLineMml(textarea.value, currentLineNumber);
+    // console.log("1 : " + playMml)
+    playMml = createChordMml(playMml, mmlHead);
+    // console.log("2 : " + playMml)
+    playAndDisp(playMml);
+  }
+
+  function playAndDisp(mml) {
+    if (!mml) return;
     Pico.pause();
-    Pico.play(Sionic(playMml));
+    Pico.play(Sionic(mml));
+    textarea5.textContent = mml;
   }
 
   // 選択範囲のMMLを得る。選択範囲以外はnote削除する
@@ -94,14 +184,18 @@ c;f;a;</textarea>
     if (currentLineNumber < 0) return "";
     // if (currentLineNumber >= lines.length) return mml; // 末尾に改行追加した場合用 
     if (currentLineNumber >= lines.length) return "";
-    const mmlBefore = lines.slice(0, currentLineNumber).join('');
-    const mmlAfter = lines.slice(currentLineNumber + 1).join('');
-    const mmlCurrent = lines[currentLineNumber];
+    let mmlBefore = lines.slice(0, currentLineNumber).join('\n');
+    let mmlAfter = lines.slice(currentLineNumber + 1).join('\n');
+    let mmlCurrent = lines[currentLineNumber];
     // if (!containsNotes(mmlCurrent)) return mml; // 現在行にnotesがない場合用（無音でなく、全体を鳴らす）
     if (!containsNotes(mmlCurrent)) return ""; // 現在行にnotesがない場合用（無音）
-    const newMml = removeNotes(mmlBefore) +
-      mmlCurrent +
-      removeNotes(mmlAfter);
+
+    if (mmlBefore)  mmlBefore  = removeNotes(mmlBefore) + '\n';
+    if (mmlCurrent) mmlCurrent += '\n';
+    mmlAfter = removeNotes(mmlAfter);
+
+    const newMml = mmlBefore + mmlCurrent + mmlAfter;
+    // console.log(newMml);
     return newMml;
   }
 
@@ -117,49 +211,10 @@ c;f;a;</textarea>
     return beforeLines.length - 1; 
   }
 
-  function playAll() {
-    const mml2 = textarea2.value;
-    const mmlChord = textarea3.value;
-    const mmlHead = textarea4.value;
+  function createChordMml(mmlChord, mmlHead) {
     const parallelizedMml = parallelizeMml(mmlChord);
     const headAddedMml = createHeadAddedMml(parallelizedMml, mmlHead);
-    const mml = mml2.replace(/\n/g, '') + ";\n" + headAddedMml;
-    Pico.pause();
-    Pico.play(Sionic(mml));
-    textarea5.textContent = mml;
-    oldMml2 = mml2;
-    oldMml3 = mmlChord;
-  }
-
-  // 現在位置のMMLを鳴らす
-  function playNowToneMml(textarea) {
-    let newMml;
-    if (isNote(textarea.value, textarea.selectionStart)) {
-      newMml = createNowToneMml(textarea.value, textarea.selectionStart);      
-    } else {
-      newMml = "";
-    }
-    Pico.pause();
-    Pico.play(Sionic(newMml));
-  }
-
-  // 入力した音のみを鳴らす
-  function playInputtedMelody() {
-    const mml2 = textarea2.value;
-    let newMml;
-    const isInserted = (oldMml2.length < mml2.length);
-    if (isInserted) {
-      newMml = createNowToneMml(textarea2.value, textarea2.selectionStart - 1);
-    } else {
-      if (isNote(textarea2.value, textarea2.selectionStart)) {
-        newMml = createNowToneMml(textarea2.value, textarea2.selectionStart);
-      } else {
-        newMml = "";
-      }
-    }
-    Pico.pause();
-    Pico.play(Sionic(newMml));
-    oldMml2 = mml2;
+    return headAddedMml;
   }
 
   function isNote(mml, iStart) {
@@ -182,59 +237,47 @@ c;f;a;</textarea>
     return createSelectedMml(mml, iStart, iEnd);
   }
 
-  function inputTextareaChord() {
-    const mmlChord = textarea3.value;
-    const mmlHead = textarea4.value;
-    const repledMml = createMmlReplLike(mmlChord, oldMml3);
-    const parallelizedMml = parallelizeMml(repledMml);
-    const headAddedMml = createHeadAddedMml(parallelizedMml, mmlHead);
-    Pico.pause();
-    Pico.play(Sionic(headAddedMml));
-    textarea5.textContent = headAddedMml;
-    oldMml3 = mmlChord;
-  }
-
-  // 差分を元に現在行だけ鳴らす
-  function createMmlReplLike(mml, oldMml) {
-    const oldLines = splitByLine(oldMml);
-    const lines = splitByLine(mml);
-    const currentLineNumber = searchFirstDifferenceLineNumber(lines, oldLines);
-    if (currentLineNumber < 0) return mml;
-    if (currentLineNumber >= lines.length) return mml; // 末尾に改行追加した場合用 
-    const mmlBefore = lines.slice(0, currentLineNumber).join('');
-    const mmlAfter = lines.slice(currentLineNumber + 1).join('');
-    const mmlCurrent = lines[currentLineNumber];
-    // if (mmlCurrent == undefined) mmlCurrent = ''; // 末尾に改行追加した場合用
-    if (!containsNotes(mmlCurrent)) return mml; // 現在行をnotesなしeditした場合用（無音でなく、全体を鳴らす）
-    const newMml = removeNotes(mmlBefore) +
-      mmlCurrent +
-      removeNotes(mmlAfter);
-    return newMml;
-  }
+  // // 差分を元に現在行だけ鳴らす
+  // function createMmlReplLike(mml, oldMml) {
+  //   const oldLines = splitByLine(oldMml);
+  //   const lines = splitByLine(mml);
+  //   const currentLineNumber = searchFirstDifferenceLineNumber(lines, oldLines);
+  //   if (currentLineNumber < 0) return mml;
+  //   if (currentLineNumber >= lines.length) return mml; // 末尾に改行追加した場合用 
+  //   const mmlBefore = lines.slice(0, currentLineNumber).join('');
+  //   const mmlAfter = lines.slice(currentLineNumber + 1).join('');
+  //   const mmlCurrent = lines[currentLineNumber];
+  //   // if (mmlCurrent == undefined) mmlCurrent = ''; // 末尾に改行追加した場合用
+  //   if (!containsNotes(mmlCurrent)) return mml; // 現在行をnotesなしeditした場合用（無音でなく、全体を鳴らす）
+  //   const newMml = removeNotes(mmlBefore) +
+  //     mmlCurrent +
+  //     removeNotes(mmlAfter);
+  //   return newMml;
+  // }
 
   function splitByLine(mml) {
     const arr = mml.split("\n");
     return arr;
   }
 
-  function searchFirstDifferenceLineNumber(lines, oldLines) {
-    const lenLines = lines.length;
-    const lenOldLines = oldLines.length;
-    const lenMin = Math.min(lenLines, lenOldLines)
-    for (let i = 0; i < lenMin; i++) {
-      if (lines[i] != oldLines[i]) return i;
-    }
-    if (lenLines > lenOldLines) {
-      // 末尾にn行追加した場合
-      return lenLines;
-    }
-    if (lenLines < lenOldLines) {
-      // 末尾n行を削除した場合
-      return lenLines;
-    }
-    // playボタンを押した場合
-    return -1;
-  }
+  // function searchFirstDifferenceLineNumber(lines, oldLines) {
+  //   const lenLines = lines.length;
+  //   const lenOldLines = oldLines.length;
+  //   const lenMin = Math.min(lenLines, lenOldLines)
+  //   for (let i = 0; i < lenMin; i++) {
+  //     if (lines[i] != oldLines[i]) return i;
+  //   }
+  //   if (lenLines > lenOldLines) {
+  //     // 末尾にn行追加した場合
+  //     return lenLines;
+  //   }
+  //   if (lenLines < lenOldLines) {
+  //     // 末尾n行を削除した場合
+  //     return lenLines;
+  //   }
+  //   // playボタンを押した場合
+  //   return -1;
+  // }
 
   function removeNotes(mml) {
     const re = /[a-g][\+\-]*/g
@@ -245,6 +288,7 @@ c;f;a;</textarea>
     const re = /[a-g][\+\-]*/g
     return mml.match(re);
   }
+
   // example : "c;e;g; \n c;f;a;" -> "cc ; ef ; ga"
   function parallelizeMml(mml) {
     const lines = splitByLine(mml);
@@ -252,31 +296,43 @@ c;f;a;</textarea>
     const maxTrackNumber = calcMaxTrackNumber(lines);
     let tracks = new Array(maxTrackNumber);
     for (let phase = 0; phase < lenLines; phase++) {
-      updateTracks(lines[phase], tracks);
+      let containsPhaseNotes = calcContainsPhaseNotes(lines[phase]);
+      updateChordTracks(lines[phase], tracks, containsPhaseNotes);
     }
     const results = tracks.join(';\n')
     // console.log(results);
     return results;
+
+    function calcContainsPhaseNotes(line) {
+      const nowTracks = line.split(';');
+      const lenNowTracks = nowTracks.length;
+      for (let i = 0; i < lenNowTracks; i++) {
+        if (nowTracks[i].match(/[a-g]/)) return true;
+      }
+      return false;
+    }
+
+    function updateChordTracks(line, tracks, containsPhaseNotes) {
+      const nowTracks = line.split(';');
+      const lenNowTracks = nowTracks.length;
+      for (let i = 0; i < lenNowTracks; i++) {
+        if (tracks[i] == undefined) tracks[i] = '';
+        tracks[i] += addRest(nowTracks[i], containsPhaseNotes);
+      }
+      return tracks;
+    }
+    // console.log(updateChordTracks("c;e;g",[,,])); // test
+    // console.log(updateChordTracks("c;f;a",["c","e","g"])); // test
+    //
+    // 音符のあったphaseのみ、rを付与する。2行目chord演奏時に先頭rなしにする用
+    function addRest(mml, containsPhaseNotes) {
+      if (!containsPhaseNotes) return mml;
+      if (!mml) return "r";
+      return mml;
+    }
   }
   // console.log(parallelizeMml("c;e;g; \n c;f;g;")); // test
   //    
-  function updateTracks(line, tracks) {
-    const nowTracks = line.split(';');
-    const lenNowTracks = nowTracks.length;
-    for (let i = 0; i < lenNowTracks; i++) {
-      if (tracks[i] == undefined) tracks[i] = '';
-      tracks[i] += calcNowTrackNote(nowTracks[i]);
-    }
-    return tracks;
-  }
-  // console.log(updateTracks("c;e;g",[,,])); // test
-  // console.log(updateTracks("c;f;a",["c","e","g"])); // test
-  //
-  function calcNowTrackNote(mml) {
-    if (!mml) return "r";
-    return mml;
-  }
-
   function calcMaxTrackNumber(arr) {
     const lenArr = arr.length;
     let maxSeparates = 0;
@@ -289,12 +345,15 @@ c;f;a;</textarea>
   }
   //console.log(calcMaxTrackNumber(["a;b;c","a"])); // test
   //
-  function createHeadAddedMml(mml, headMml) {
+  // trackごとにmmlHeadを付与する
+  function createHeadAddedMml(mml, mmlHead) {
+    if (!mml) return "";
+    if (!mmlHead) return mml;
     mml = mml.replace(/\n/g, '');
     let arr = mml.split(";");
     const arrLength = arr.length;
     for (let i = 0; i < arrLength; i++) {
-      arr[i] = headMml + arr[i];
+      arr[i] = mmlHead + arr[i];
     }
     const results = arr.join(';\n');
     // console.log(results);
