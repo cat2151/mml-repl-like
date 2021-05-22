@@ -26,6 +26,7 @@ https://twitter.com/cat2151/status/1394331295572922373
   - 「鳴らして、変更して」のサイクルを速く回したい
 - コード進行をMMLで書くとき、
   - 「鳴らして、変更して」のサイクルを速く回したい
+  - カーソル上下でコード進行を素早く鳴らしたい
 - ktコマンドでtransposeしながら書きたい
   - 和音でもtransposeしたい
 - 生成したMMLを [mml-template-generator](https://cat2151.github.io/mml-template-generator/) で、ほかのMMLに簡易変換したい
