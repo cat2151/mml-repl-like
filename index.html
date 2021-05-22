@@ -13,14 +13,88 @@ c;f;a;</textarea>
 <textarea id="textarea5" rows="6" cols="10" readonly></textarea>
 <script>
   let textarea2 = document.getElementById("textarea2");
-  textarea2.addEventListener("input", inputTextareaMelody);
   let textarea3 = document.getElementById("textarea3");
-  textarea3.addEventListener("input", inputTextareaChord);
   let textarea4 = document.getElementById("textarea4");
-  textarea4.addEventListener("input", inputTextareaChord);
   let textarea5 = document.getElementById("textarea5");
+
+  textarea2.addEventListener("input", inputTextareaMelody);
+  textarea3.addEventListener("input", inputTextareaChord);
+  textarea4.addEventListener("input", inputTextareaChord);
+
+  // SHIFT+ENTERで、改行せずに別の処理を行う
+  textarea2.addEventListener('keypress', function(e) {
+    if (e.keyCode === 13 && e.shiftKey) {
+      e.preventDefault();
+      // 選択した範囲のMMLを鳴らす
+      playSelectedMml(textarea2);
+    }
+  });
+  
+  // CTRL+S で、ページ保存ダイアログを開かず、別の処理を行う
+  textarea2.addEventListener('keydown', function(e) {
+    if (e.keyCode === 83 && e.ctrlKey) {
+      e.preventDefault();
+      // 選択した範囲のMMLを鳴らす
+      playSelectedMml(textarea2);
+    }
+  });
+
   let oldMml2 = "";
   let oldMml3 = "";
+
+  // textareaで選択した範囲のMMLを鳴らす
+  function playSelectedMml(textarea) {
+    let playMml = "";
+    if (isSelect(textarea)) {
+      // 選択範囲からmmlを得る
+      playMml = createSelectedMml(textarea.value, textarea.selectionStart, textarea.selectionEnd);
+    } else {
+      // 現在行からmmlを得る
+      const currentLineNumber = calcCurrentLineNumber(textarea.value, textarea.selectionStart)
+      playMml = createCurrentLineMml(textarea.value, currentLineNumber);
+    }
+    Pico.pause();
+    Pico.play(Sionic(playMml));
+  }
+
+  // 選択範囲のMMLを得る。選択範囲以外はnote削除する
+  function createSelectedMml(mml, iStart, iEnd) {
+    const mmlBefore = mml.slice(0, iStart);
+    const mmlAfter = mml.slice(iEnd);
+    const mmlCurrent = mml.slice(iStart, iEnd);
+    if (!containsNotes(mmlCurrent)) return mml; // 選択範囲にnotesがない場合用（無音でなく、全体を鳴らす）
+    const newMml = removeNotes(mmlBefore) +
+      mmlCurrent +
+      removeNotes(mmlAfter);
+    return newMml;
+  }
+
+  // 現在行のMMLを得る。現在行以外はnote削除する
+  function createCurrentLineMml(mml, currentLineNumber) {
+    const lines = splitByLine(mml);
+    if (currentLineNumber < 0) return mml;
+    if (currentLineNumber >= lines.length) return mml; // 末尾に改行追加した場合用 
+    const mmlBefore = lines.slice(0, currentLineNumber).join('');
+    const mmlAfter = lines.slice(currentLineNumber + 1).join('');
+    const mmlCurrent = lines[currentLineNumber];
+    if (!containsNotes(mmlCurrent)) return mml; // 現在行にnotesがない場合用（無音でなく、全体を鳴らす）
+    const newMml = removeNotes(mmlBefore) +
+      mmlCurrent +
+      removeNotes(mmlAfter);
+    return newMml;
+  }
+
+  // 範囲選択中か得る
+  function isSelect(textarea) {
+    return textarea.selectionStart != textarea.selectionEnd;
+  }
+  
+  // 現在行の行番号を得る
+  function calcCurrentLineNumber(str, selectionStart) {
+    let beforeStr = str.substr(0, selectionStart);
+    let beforeLines = beforeStr.split(/\n/);
+    return beforeLines.length - 1; 
+  }
 
   function clickBtn5() {
     const mml2 = textarea2.value;
