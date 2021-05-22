@@ -3,8 +3,30 @@
 # DEMO
 https://cat2151.github.io/mml-repl-like/
 
-#
+# twitter
 https://twitter.com/cat2151/status/1394331295572922373
+
+# 仕様メモ
+- MMLを1文字入力するごとに音が鳴る
+  - 入力した音だけ鳴る
+  - （chordAreaの場合は、現在行が鳴る）
+- カーソル移動で音が鳴る
+  - 今カーソルのある場所の音だけ鳴る
+  - （chordAreaで上下移動した場合は、現在行が鳴る）
+- SHIFT + ENTER または CTRL + S で音が鳴る
+  - 現在行が鳴る
+  - 範囲選択していた場合は、その範囲の音だけ鳴る
+
+# こんなとき便利
+- MMLを書くとき、すぐ音を鳴らしたい
+  - キーボードをタイプして0.2秒以内にその音を鳴らしたい
+  - SHIFT + ENTER 連打で和音を連打で鳴らしたい
+- フレーズをMMLで書くとき、
+  - 「鳴らして、変更して」のサイクルを速く回したい
+- コード進行をMMLで書くとき、
+  - 「鳴らして、変更して」のサイクルを速く回したい
+- ktコマンドでtransposeしながら書きたい
+  - 和音でもtransposeしたい
 
 ---
 Powered by [SiON](https://github.com/keim/SiON)
