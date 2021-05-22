@@ -8,7 +8,7 @@ e</textarea>
 <br>
 <textarea id="textarea3" rows="5" cols="10">c;e;g;
 c;f;a;</textarea>
-<input type="button" value="play" onclick="clickBtn5()" />
+<input type="button" value="play" onclick="playAll()" />
 <br>
 <textarea id="textarea5" rows="6" cols="10" readonly></textarea>
 <script>
@@ -17,32 +17,42 @@ c;f;a;</textarea>
   let textarea4 = document.getElementById("textarea4");
   let textarea5 = document.getElementById("textarea5");
 
-  textarea2.addEventListener("input", inputTextareaMelody);
+  textarea2.addEventListener("input", playInputtedMelody);
   textarea3.addEventListener("input", inputTextareaChord);
   textarea4.addEventListener("input", inputTextareaChord);
 
-  // SHIFT+ENTERで、改行せずに別の処理を行う
   textarea2.addEventListener('keypress', function(e) {
+    // SHIFT+ENTER
     if (e.keyCode === 13 && e.shiftKey) {
+      // 改行しない
       e.preventDefault();
       // 選択した範囲のMMLを鳴らす
       playSelectedMml(textarea2);
     }
   });
   
-  // CTRL+S で、ページ保存ダイアログを開かず、別の処理を行う
   textarea2.addEventListener('keydown', function(e) {
+    // CTRL+S
     if (e.keyCode === 83 && e.ctrlKey) {
+      // ページ保存ダイアログを開かない
       e.preventDefault();
       // 選択した範囲のMMLを鳴らす
       playSelectedMml(textarea2);
     }
   });
 
+  textarea2.addEventListener('keyup', function(e) {
+    // cursor
+    if (37 <= e.keyCode && e.keyCode <= 40) {
+      // 現在位置のMMLを鳴らす
+      playNowToneMml(textarea2);
+    }
+  });
+
   let oldMml2 = "";
   let oldMml3 = "";
 
-  // textareaで選択した範囲のMMLを鳴らす
+  // textareaで選択した範囲または現在行のMMLを鳴らす
   function playSelectedMml(textarea) {
     let playMml = "";
     if (isSelect(textarea)) {
@@ -96,7 +106,7 @@ c;f;a;</textarea>
     return beforeLines.length - 1; 
   }
 
-  function clickBtn5() {
+  function playAll() {
     const mml2 = textarea2.value;
     const mmlChord = textarea3.value;
     const mmlHead = textarea4.value;
@@ -110,13 +120,47 @@ c;f;a;</textarea>
     oldMml3 = mmlChord;
   }
 
-  function inputTextareaMelody() {
-    const mml2 = textarea2.value;
-    const repledMml = createMmlReplLike(mml2, oldMml2);
+  // 現在位置のMMLを鳴らす
+  function playNowToneMml(textarea) {
+    let newMml;
+    if (isNote(textarea.value, textarea.selectionStart)) {
+      newMml = createNowToneMml(textarea.value, textarea.selectionStart);      
+    } else {
+      newMml = "";
+    }
     Pico.pause();
-    Pico.play(Sionic(repledMml));
-    textarea5.textContent = repledMml;
+    Pico.play(Sionic(newMml));
+  }
+
+  // 入力した音のみを鳴らす
+  function playInputtedMelody() {
+    const mml2 = textarea2.value;
+    let newMml;
+    const isInserted = (oldMml2.length < mml2.length);
+    if (isInserted) {
+      newMml = createNowToneMml(textarea2.value, textarea2.selectionStart - 1);
+    } else {
+      if (isNote(textarea2.value, textarea2.selectionStart)) {
+        newMml = createNowToneMml(textarea2.value, textarea2.selectionStart);
+      } else {
+        newMml = "";
+      }
+    }
+    Pico.pause();
+    Pico.play(Sionic(newMml));
     oldMml2 = mml2;
+  }
+
+  function isNote(mml, iStart) {
+    return mml.slice(iStart, iStart + 1).match(/[a-g]/);
+  }
+
+  // 現在位置のMMLを得る。そこ以外はnote削除する
+  // for delete & backspace
+  function createNowToneMml(mml, iStart) {
+    // TODO あとで+-考慮する
+    const iEnd = iStart + 1;
+    return createSelectedMml(mml, iStart, iEnd);
   }
 
   function inputTextareaChord() {
@@ -131,6 +175,7 @@ c;f;a;</textarea>
     oldMml3 = mmlChord;
   }
 
+  // 差分を元に現在行だけ鳴らす
   function createMmlReplLike(mml, oldMml) {
     const oldLines = splitByLine(oldMml);
     const lines = splitByLine(mml);
