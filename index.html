@@ -72,7 +72,8 @@ c;f;a;</textarea>
     const mmlBefore = mml.slice(0, iStart);
     const mmlAfter = mml.slice(iEnd);
     const mmlCurrent = mml.slice(iStart, iEnd);
-    if (!containsNotes(mmlCurrent)) return mml; // 選択範囲にnotesがない場合用（無音でなく、全体を鳴らす）
+    // if (!containsNotes(mmlCurrent)) return mml; // 選択範囲にnotesがない場合用（無音でなく、全体を鳴らす）
+    if (!containsNotes(mmlCurrent)) return ""; // 選択範囲にnotesがない場合用（無音）
     const newMml = removeNotes(mmlBefore) +
       mmlCurrent +
       removeNotes(mmlAfter);
@@ -82,12 +83,15 @@ c;f;a;</textarea>
   // 現在行のMMLを得る。現在行以外はnote削除する
   function createCurrentLineMml(mml, currentLineNumber) {
     const lines = splitByLine(mml);
-    if (currentLineNumber < 0) return mml;
-    if (currentLineNumber >= lines.length) return mml; // 末尾に改行追加した場合用 
+    // if (currentLineNumber < 0) return mml;
+    if (currentLineNumber < 0) return "";
+    // if (currentLineNumber >= lines.length) return mml; // 末尾に改行追加した場合用 
+    if (currentLineNumber >= lines.length) return "";
     const mmlBefore = lines.slice(0, currentLineNumber).join('');
     const mmlAfter = lines.slice(currentLineNumber + 1).join('');
     const mmlCurrent = lines[currentLineNumber];
-    if (!containsNotes(mmlCurrent)) return mml; // 現在行にnotesがない場合用（無音でなく、全体を鳴らす）
+    // if (!containsNotes(mmlCurrent)) return mml; // 現在行にnotesがない場合用（無音でなく、全体を鳴らす）
+    if (!containsNotes(mmlCurrent)) return ""; // 現在行にnotesがない場合用（無音）
     const newMml = removeNotes(mmlBefore) +
       mmlCurrent +
       removeNotes(mmlAfter);
@@ -156,10 +160,18 @@ c;f;a;</textarea>
   }
 
   // 現在位置のMMLを得る。そこ以外はnote削除する
-  // for delete & backspace
   function createNowToneMml(mml, iStart) {
-    // TODO あとで+-考慮する
-    const iEnd = iStart + 1;
+    // + / -
+    for (; 0 <= iStart; iStart--) {
+      const isPlusMinus = mml[iStart].match(/[\+\-]/);
+      if (!isPlusMinus) break;
+    }    
+    let iEnd = iStart + 1;
+    // + / -
+    for (iEnd = iStart + 1; iEnd < mml.length; iEnd++) {
+      const isPlusMinus = mml[iEnd].match(/[\+\-]/);
+      if (!isPlusMinus) break;
+    }
     return createSelectedMml(mml, iStart, iEnd);
   }
 
