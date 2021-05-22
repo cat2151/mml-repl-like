@@ -6,7 +6,7 @@ https://cat2151.github.io/mml-repl-like/
 # twitter
 https://twitter.com/cat2151/status/1394331295572922373
 
-# 仕様メモ
+# 仕様
 - MMLを1文字入力するごとに音が鳴る
   - 入力した音だけ鳴る
   - （chordAreaの場合は、現在行が鳴る）
@@ -16,6 +16,7 @@ https://twitter.com/cat2151/status/1394331295572922373
 - SHIFT + ENTER または CTRL + S で音が鳴る
   - 現在行が鳴る
   - 範囲選択していた場合は、その範囲の音だけ鳴る
+- 演奏中のMMLを表示する
 
 # こんなとき便利
 - MMLを書くとき、すぐ音を鳴らしたい
@@ -27,6 +28,7 @@ https://twitter.com/cat2151/status/1394331295572922373
   - 「鳴らして、変更して」のサイクルを速く回したい
 - ktコマンドでtransposeしながら書きたい
   - 和音でもtransposeしたい
+- 生成したMMLを [mml-template-generator](https://cat2151.github.io/mml-template-generator/) で、ほかのMMLに簡易変換したい
 
 ---
 Powered by [SiON](https://github.com/keim/SiON)
