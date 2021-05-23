@@ -1,16 +1,19 @@
 <script src="https://minipop.github.io/sionicjs/demo/pico.min.js"></script>
 <script src="https://cat2151.github.io/sionicjs/dist/sionic.js"></script>
-<textarea id="textarea2" rows="5" cols="10">@5 l8 o7 c
+<textarea id="textarea2" rows="5" cols="40">#FM2OP@0,300,997,600,1000 @0 l8 o6 c
 d
-e</textarea>
+e
+</textarea>
 <br>
-<textarea id="textarea4" rows="1" cols="10">@5 l2 </textarea>
+<textarea id="textarea4" rows="1" cols="40">#FM2OP@1,200,998,500,1000 @1 l2 o5</textarea>
 <br>
-<textarea id="textarea3" rows="5" cols="15">c;e;g;
-c;f;a;</textarea>
+<textarea id="textarea3" rows="5" cols="20">o3c;e;g;<c>;
+o3f;f;a;<c>
+o3g;d;f;b;
+o3c;e;g;<c>;</textarea>
 <input type="button" value="play" onclick="playAll()" />
 <br>
-<textarea id="textarea5" rows="6" cols="15" readonly></textarea>
+<textarea id="textarea5" rows="6" cols="50" readonly></textarea>
 <div>
 play selection : SHIFT + ENTER / CTRL + S<br>
 </div>
@@ -140,15 +143,6 @@ play selection : SHIFT + ENTER / CTRL + S<br>
   function playInputtedChord() {
     playCurrentChord(textarea3, textarea4.value);
   }
-  // // 現在行のchord MMLを鳴らす(diff)
-  // function playInputtedChord() {
-  //   const mmlChord = textarea3.value;
-  //   const mmlHead = textarea4.value;
-  //   const repledMml = createMmlReplLike(mmlChord, oldMml3);
-  //   const headAddedMml = createChordMml(repledMml, mmlHead);
-  //   playAndDisp(headAddedMml);
-  //   oldMml3 = mmlChord;
-  // }
 
   // 現在行のchord MMLを鳴らす(selectionStart)
   function playCurrentChord(textarea, mmlHead = "") {
@@ -240,47 +234,10 @@ play selection : SHIFT + ENTER / CTRL + S<br>
     return createSelectedMml(mml, iStart, iEnd);
   }
 
-  // // 差分を元に現在行だけ鳴らす
-  // function createMmlReplLike(mml, oldMml) {
-  //   const oldLines = splitByLine(oldMml);
-  //   const lines = splitByLine(mml);
-  //   const currentLineNumber = searchFirstDifferenceLineNumber(lines, oldLines);
-  //   if (currentLineNumber < 0) return mml;
-  //   if (currentLineNumber >= lines.length) return mml; // 末尾に改行追加した場合用 
-  //   const mmlBefore = lines.slice(0, currentLineNumber).join('');
-  //   const mmlAfter = lines.slice(currentLineNumber + 1).join('');
-  //   const mmlCurrent = lines[currentLineNumber];
-  //   // if (mmlCurrent == undefined) mmlCurrent = ''; // 末尾に改行追加した場合用
-  //   if (!containsNotes(mmlCurrent)) return mml; // 現在行をnotesなしeditした場合用（無音でなく、全体を鳴らす）
-  //   const newMml = removeNotes(mmlBefore) +
-  //     mmlCurrent +
-  //     removeNotes(mmlAfter);
-  //   return newMml;
-  // }
-
   function splitByLine(mml) {
     const arr = mml.split("\n");
     return arr;
   }
-
-  // function searchFirstDifferenceLineNumber(lines, oldLines) {
-  //   const lenLines = lines.length;
-  //   const lenOldLines = oldLines.length;
-  //   const lenMin = Math.min(lenLines, lenOldLines)
-  //   for (let i = 0; i < lenMin; i++) {
-  //     if (lines[i] != oldLines[i]) return i;
-  //   }
-  //   if (lenLines > lenOldLines) {
-  //     // 末尾にn行追加した場合
-  //     return lenLines;
-  //   }
-  //   if (lenLines < lenOldLines) {
-  //     // 末尾n行を削除した場合
-  //     return lenLines;
-  //   }
-  //   // playボタンを押した場合
-  //   return -1;
-  // }
 
   function removeNotes(mml) {
     const re = /[a-g][\+\-]*/g
