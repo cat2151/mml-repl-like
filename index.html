@@ -243,12 +243,12 @@ FM : #FM2OP@n,fb,dr,tl,mul
   }
 
   function removeNotes(mml) {
-    const re = /[a-g][\+\-]*/g
+    const re = /[a-g][\+\-]*[\d]*[\.]*/g
     return mml.replace(re, '');
   }
 
   function containsNotes(mml) {
-    const re = /[a-g][\+\-]*/g
+    const re = /[a-g]/
     return mml.match(re);
   }
 
