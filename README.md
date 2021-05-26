@@ -31,6 +31,9 @@ https://twitter.com/cat2151/status/1394331295572922373
   - 和音でもtransposeしたい
 - 生成したMMLを [mml-template-generator](https://cat2151.github.io/mml-template-generator/) で、ほかのMMLに簡易変換したい
 
+# 注意
+開発中のため、[Sionic.js Fork版](https://github.com/cat2151/sionicjs/) のほうを使っています。
+
 ---
 Powered by [SiON](https://github.com/keim/SiON)
 and [Sionic.js](https://github.com/minipop/sionicjs/)
