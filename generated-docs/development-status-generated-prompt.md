@@ -1,4 +1,4 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-11
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -195,6 +195,7 @@ Last updated: 2025-11-10
 - .github/workflows/call-issue-note.yml
 - .github/workflows/call-translate-readme.yml
 - LICENSE
+- README.ja.md
 - README.md
 - generated-docs/project-overview-generated-prompt.md
 - index.html
@@ -336,15 +337,25 @@ planにおいては、修正対象のソースファイル名と関数名を、�
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+9348d51 Auto-translate README.ja.md to README.md [auto]
+02d805a Merge branch 'main' of github.com:cat2151/mml-repl-like into main
+fe5ed2c ja追加
+d58ad26 Add Jekyll front matter to README.md
+45cc3aa Update project summaries (overview & development status) [auto]
 3f436cb github-actionsリポジトリの共通ワークフローを導入
 
 ### 変更されたファイル:
 .github/workflows/call-daily-project-summary.yml
 .github/workflows/call-issue-note.yml
 .github/workflows/call-translate-readme.yml
+README.ja.md
 README.md
+generated-docs/development-status-generated-prompt.md
+generated-docs/development-status.md
+generated-docs/project-overview-generated-prompt.md
+generated-docs/project-overview.md
 index.html
 
 
 ---
-Generated at: 2025-11-10 08:39:01 JST
+Generated at: 2025-11-11 07:06:12 JST
