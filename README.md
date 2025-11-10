@@ -1,3 +1,8 @@
+---
+layout: default
+title: README
+permalink: /README.html
+---
 # mml-repl-like
 
 # DEMO
