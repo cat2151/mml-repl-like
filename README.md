@@ -1,8 +1,3 @@
----
-layout: default
-title: README
-permalink: /README.html
----
 # mml-repl-like
 
 # DEMO
@@ -11,33 +6,33 @@ https://cat2151.github.io/mml-repl-like/
 # twitter
 https://twitter.com/cat2151/status/1394331295572922373
 
-# 仕様
-- MMLを1文字入力するごとに音が鳴る
-  - 入力した音だけ鳴る
-  - （chordAreaの場合は、現在行が鳴る）
-- カーソル移動で音が鳴る
-  - 今カーソルのある場所の音だけ鳴る
-  - （chordAreaで上下移動した場合は、現在行が鳴る）
-- SHIFT + ENTER または CTRL + S で音が鳴る
-  - 現在行が鳴る
-  - 範囲選択していた場合は、その範囲の音だけ鳴る
-- 演奏中のMMLを表示する
+# Features
+- A sound plays every time an MML character is typed.
+  - Only the sound corresponding to the input character plays.
+  - (In `chordArea`, the current line plays.)
+- A sound plays when moving the cursor.
+  - Only the sound at the current cursor position plays.
+  - (When moving up/down in `chordArea`, the current line plays.)
+- A sound plays with SHIFT + ENTER or CTRL + S.
+  - The current line plays.
+  - If a range is selected, only the sound within that range plays.
+- Displays the MML currently being played.
 
-# こんなとき便利
-- MMLを書くとき、すぐ音を鳴らしたい
-  - キーボードをタイプして0.2秒以内にその音を鳴らしたい
-  - SHIFT + ENTER 連打で和音を連打で鳴らしたい
-- フレーズをMMLで書くとき、
-  - 「鳴らして、変更して」のサイクルを速く回したい
-- コード進行をMMLで書くとき、
-  - 「鳴らして、変更して」のサイクルを速く回したい
-  - カーソル上下でコード進行を素早く鳴らしたい
-- ktコマンドでtransposeしながら書きたい
-  - 和音でもtransposeしたい
-- 生成したMMLを [mml-template-generator](https://cat2151.github.io/mml-template-generator/) で、ほかのMMLに簡易変換したい
+# Use Cases
+- When writing MML, you want to hear the sound immediately.
+  - You want to hear the sound within 0.2 seconds of typing on the keyboard.
+  - You want to play chords repeatedly by mashing SHIFT + ENTER.
+- When writing phrases in MML:
+  - You want to quickly iterate through the "play and modify" cycle.
+- When writing chord progressions in MML:
+  - You want to quickly iterate through the "play and modify" cycle.
+  - You want to quickly play chord progressions by moving the cursor up and down.
+- You want to write while transposing with the `kt` command.
+  - You also want to transpose chords.
+- You want to easily convert the generated MML into other MML formats using [mml-template-generator](https://cat2151.github.io/mml-template-generator/).
 
-# 注意
-開発中のため、[Sionic.js Fork版](https://github.com/cat2151/sionicjs/) のほうを使っています。
+# Note
+Since this is under development, a [forked version of Sionic.js](https://github.com/cat2151/sionicjs/) is being used.
 
 ---
 Powered by [SiON](https://github.com/keim/SiON)
