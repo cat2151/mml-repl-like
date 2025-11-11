@@ -337,6 +337,7 @@ planにおいては、修正対象のソースファイル名と関数名を、�
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+b0c00cd Update project summaries (overview & development status) [auto]
 9348d51 Auto-translate README.ja.md to README.md [auto]
 02d805a Merge branch 'main' of github.com:cat2151/mml-repl-like into main
 fe5ed2c ja追加
@@ -358,4 +359,4 @@ index.html
 
 
 ---
-Generated at: 2025-11-11 07:06:12 JST
+Generated at: 2025-11-11 09:27:27 JST
