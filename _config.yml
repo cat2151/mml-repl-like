@@ -1,0 +1,8 @@
+title: "mml-repl-like"
+description: "mml-repl-like"
+theme: jekyll-theme-slate
+github:
+  is_project_page: true
+  repository_url: https://github.com/cat2151/mml-repl-like
+plugins:
+  - jekyll-sitemap
