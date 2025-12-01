@@ -1,4 +1,4 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-11
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -108,6 +108,7 @@ and [pico.js](https://github.com/mohayonao/pico.js/)
 
 ## ファイル階層ツリー
 📄 LICENSE
+📖 README.ja.md
 📖 README.md
 📁 generated-docs/
 🌐 index.html
@@ -121,6 +122,7 @@ and [pico.js](https://github.com/mohayonao/pico.js/)
 関数呼び出し階層を分析できませんでした
 
 ## プロジェクト構造（ファイル一覧）
+README.ja.md
 README.md
 index.html
 
@@ -134,4 +136,4 @@ index.html
 
 
 ---
-Generated at: 2025-11-10 08:39:01 JST
+Generated at: 2025-11-11 09:27:27 JST
