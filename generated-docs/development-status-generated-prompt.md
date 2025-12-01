@@ -1,4 +1,4 @@
-Last updated: 2025-11-11
+Last updated: 2025-12-02
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -161,6 +161,7 @@ Last updated: 2025-11-11
 - .github/actions-tmp/generated-docs/project-overview-generated-prompt.md
 - .github/actions-tmp/generated-docs/project-overview.md
 - .github/actions-tmp/generated-docs/style.css
+- .github/actions-tmp/googled947dc864c270e07.html
 - .github/actions-tmp/issue-notes/10.md
 - .github/actions-tmp/issue-notes/11.md
 - .github/actions-tmp/issue-notes/12.md
@@ -197,6 +198,7 @@ Last updated: 2025-11-11
 - LICENSE
 - README.ja.md
 - README.md
+- _config.yml
 - generated-docs/project-overview-generated-prompt.md
 - index.html
 
@@ -337,13 +339,8 @@ planにおいては、修正対象のソースファイル名と関数名を、�
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-b0c00cd Update project summaries (overview & development status) [auto]
-9348d51 Auto-translate README.ja.md to README.md [auto]
-02d805a Merge branch 'main' of github.com:cat2151/mml-repl-like into main
-fe5ed2c ja追加
-d58ad26 Add Jekyll front matter to README.md
-45cc3aa Update project summaries (overview & development status) [auto]
-3f436cb github-actionsリポジトリの共通ワークフローを導入
+35550ee Merge branch 'main' of github.com:cat2151/mml-repl-like into main
+404b682 Google検索にindexさせる用
 
 ### 変更されたファイル:
 .github/workflows/call-daily-project-summary.yml
@@ -351,6 +348,7 @@ d58ad26 Add Jekyll front matter to README.md
 .github/workflows/call-translate-readme.yml
 README.ja.md
 README.md
+_config.yml
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
@@ -359,4 +357,4 @@ index.html
 
 
 ---
-Generated at: 2025-11-11 09:27:27 JST
+Generated at: 2025-12-02 07:05:31 JST

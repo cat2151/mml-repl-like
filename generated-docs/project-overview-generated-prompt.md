@@ -1,4 +1,4 @@
-Last updated: 2025-11-11
+Last updated: 2025-12-02
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -110,6 +110,7 @@ and [pico.js](https://github.com/mohayonao/pico.js/)
 📄 LICENSE
 📖 README.ja.md
 📖 README.md
+📄 _config.yml
 📁 generated-docs/
 🌐 index.html
 
@@ -136,4 +137,4 @@ index.html
 
 
 ---
-Generated at: 2025-11-11 09:27:27 JST
+Generated at: 2025-12-02 07:05:31 JST
